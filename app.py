@@ -4,7 +4,7 @@
 # ==============================
 # MAWARED PYTHON PRO – CLOUD RUN EDITION (NO INTERNAL SCHEDULER)
 # مع حماية أوقات الدوام للـتحضير الآلي فقط
-# الإصدار: 5.5.0 (مع إصلاحات المسارات)
+# الإصدار: 5.5.0 (مع إصلاحات المسارات) + Patch: updateToken 403 fix (APIKEY/ENV)
 # ==============================
 
 import os
@@ -13,8 +13,7 @@ import time
 import random
 import threading
 import base64
-import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, Dict, Any, Tuple, List
 
 import requests
@@ -75,7 +74,13 @@ def env_bool(name: str, default: bool = False) -> bool:
 # إعدادات تليجرام
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+# إدارة التوكن (كما كان سابقاً)
 SHOW_TOKEN_MANAGEMENT = env_bool("SHOW_TOKEN_MANAGEMENT", False)
+
+# ✅ Patch: API Key خاص بتحديث التوكن (بديل آمن عن فتح الإدارة كاملة)
+# إذا تم تعيينه -> يسمح لـ /updateToken حتى لو SHOW_TOKEN_MANAGEMENT=False
+UPDATE_TOKEN_APIKEY = str(os.environ.get("UPDATE_TOKEN_APIKEY", "")).strip()
 
 # ------------------------------
 # إعدادات الدوام الافتراضية
@@ -108,7 +113,6 @@ def load_settings() -> Dict[str, Any]:
     except Exception:
         data = {}
 
-    # قيم افتراضية مع دمج
     merged = {
         "start_min": safe_int(data.get("start_min"), DEFAULT_START_MIN),
         "end_min": safe_int(data.get("end_min"), DEFAULT_END_MIN),
@@ -161,7 +165,7 @@ auto_state = {
     "done_out": False,
     "last_msg_date": "",
     "last_holiday_msg_date": "",
-    "scheduler_paused": False   # حقل جديد للإيقاف المؤقت
+    "scheduler_paused": False
 }
 auto_state_lock = threading.Lock()
 
@@ -171,12 +175,11 @@ auto_state_lock = threading.Lock()
 _token_cache = {
     "token": "",
     "timestamp": 0,
-    "ttl": 3600  # صلاحية الكاش: ساعة واحدة
+    "ttl": 3600
 }
 _token_cache_lock = threading.Lock()
 
 def clear_token_cache():
-    """مسح كاش التوكن"""
     with _token_cache_lock:
         _token_cache["token"] = ""
         _token_cache["timestamp"] = 0
@@ -201,8 +204,6 @@ def fmt_minutes(m: int) -> str:
     return f"{h:02d}:{mm:02d}"
 
 def is_weekend(dt: datetime) -> bool:
-    # في بايثون: Monday=0 ... Sunday=6
-    # السعودية: الجمعة والسبت عادة عطلة => 4 و5
     return dt.weekday() in (4, 5)
 
 # ------------------------------
@@ -241,7 +242,6 @@ def decrypt_token(enc: str) -> str:
 def write_env_token(token: str):
     try:
         if not os.path.exists(ENV_FILE):
-            # إنشاء ملف .env فارغ إذا لم يكن موجوداً
             with open(ENV_FILE, "w") as f:
                 f.write("")
         set_key(ENV_FILE, "MAWARED_TOKEN", token)
@@ -251,6 +251,7 @@ def write_env_token(token: str):
 def set_token(token: str):
     if not token:
         return
+
     write_env_token(token)
     enc = encrypt_token(token)
 
@@ -358,9 +359,6 @@ def fetch_employee_info(token: str) -> Tuple[bool, str, Dict[str, Any]]:
         return False, str(e), {}
 
 def send_attendance(token: str, action: str) -> Tuple[bool, str, Dict[str, Any]]:
-    """
-    action: checkin | checkout
-    """
     try:
         headers = build_headers(token)
         payload = {"type": action}
@@ -376,20 +374,13 @@ def send_attendance(token: str, action: str) -> Tuple[bool, str, Dict[str, Any]]
 # أدوات حضور/انصراف
 # ------------------------------
 def is_holiday_blocked(employee_data: Dict[str, Any]) -> bool:
-    """
-    فحص وجود إجازة أو مانع من النظام.
-    يعتمد على مفاتيح قد تختلف، لذلك نحاول بأكثر من طريقة.
-    """
     if not employee_data:
         return False
-    # محاولات عامة:
     try:
-        # مثال: employee_data قد يحتوي "isOnLeave" أو "onLeave" أو "holiday"
         for k in ("isOnLeave", "onLeave", "holiday", "isHoliday", "hasLeave"):
             if k in employee_data and bool(employee_data.get(k)):
                 return True
 
-        # أحياناً تكون داخل employee
         emp = employee_data.get("employee") or employee_data.get("data") or {}
         for k in ("isOnLeave", "onLeave", "holiday", "isHoliday", "hasLeave"):
             if k in emp and bool(emp.get(k)):
@@ -438,12 +429,11 @@ def reset_auto_state_if_new_day():
             auto_state["done_out"] = False
             auto_state["last_msg_date"] = ""
             auto_state["last_holiday_msg_date"] = ""
-            # لا نغير scheduler_paused عند بداية يوم جديد
             log(f"🆕 يوم جديد: إعادة ضبط حالة الأوتو لليوم {today}")
     persist_auto_state()
 
 # ------------------------------
-# فحص التوكن وتجديده (إذا توفر endpoint)
+# فحص التوكن
 # ------------------------------
 def validate_token() -> Tuple[bool, str]:
     token = get_token()
@@ -455,7 +445,7 @@ def validate_token() -> Tuple[bool, str]:
     return True, "توكن صالح"
 
 # ------------------------------
-# تحضير/توليد أوقات اليوم (دون جدولة داخلية)
+# تحضير/توليد أوقات اليوم
 # ------------------------------
 def rand_offset_minutes() -> int:
     with settings_lock:
@@ -475,7 +465,6 @@ def get_checkin_window() -> Tuple[int, int]:
         window_min = settings.get("window_min", DEFAULT_WINDOW_MIN)
 
     if s is None or e is None:
-        # نافذة افتراضية: start_min .. start_min+window
         return start_min, start_min + window_min
     return int(s), int(e)
 
@@ -491,10 +480,6 @@ def get_checkout_window() -> Tuple[int, int]:
     return int(s), int(e)
 
 def generate_daily_times_at_7am():
-    """
-    توليد الأوقات اليومية عند الساعة 7 صباحاً فقط (بناء على إعدادات window)
-    يتم تخزينها في mawared_settings.json داخل مفاتيح checkin_start/checkin_end/checkout_start/checkout_end.
-    """
     try:
         reset_auto_state_if_new_day()
 
@@ -505,12 +490,10 @@ def generate_daily_times_at_7am():
             log(f"⏸️ GENERATE_TIMES_7AM: تم استدعاء التوليد عند {now.strftime('%H:%M')} وليس 07:00 - تخطي")
             return
 
-        # منع التوليد في الجمعة والسبت
         if weekday in (4, 5):
             log("📅 اليوم عطلة (جمعة/سبت) - لن يتم توليد أوقات")
             return
 
-        # التأكد من عدم التوليد أكثر من مرة في نفس اليوم
         with settings_lock:
             last_gen = settings.get("last_generation_date", "")
         if last_gen == today_str:
@@ -524,16 +507,12 @@ def generate_daily_times_at_7am():
             prep_start = int(settings.get("prep_start_min", PREP_START_MIN))
             prep_end = int(settings.get("prep_end_min", PREP_END_MIN))
 
-        # توليد نافذة دخول وخروج مع عشوائية اختيارية
-        # الدخول: بين start_min .. start_min+window
         cin_start = start_min + rand_offset_minutes()
         cin_end = cin_start + window_min
 
-        # الخروج: بين end_min .. end_min+window
         cout_start = end_min + rand_offset_minutes()
         cout_end = cout_start + window_min
 
-        # حفظ في settings
         with settings_lock:
             settings["checkin_start"] = cin_start
             settings["checkin_end"] = cin_end
@@ -543,7 +522,6 @@ def generate_daily_times_at_7am():
             settings["prep_end_min"] = prep_end
             settings["last_generation_date"] = today_str
 
-        # كتابة الملف
         try:
             with open(INFO_FILE, "w", encoding="utf-8") as f:
                 json.dump(settings, f, ensure_ascii=False, indent=2)
@@ -573,12 +551,10 @@ def perform_attendance(action: str) -> Tuple[bool, str]:
 
     ok, msg, info = fetch_employee_info(token)
     if not ok:
-        # لا نمسح الكاش مباشرة، نتحقق إذا كان الخطأ 401
         if "HTTP 401" in msg:
             clear_token_cache()
         return False, f"فشل جلب بيانات الموظف: {msg}"
 
-    # منع الإجازات إذا مفعل
     with settings_lock:
         holiday_block = bool(settings.get("holiday_block", True))
         weekend_block = bool(settings.get("weekend_block", True))
@@ -591,7 +567,6 @@ def perform_attendance(action: str) -> Tuple[bool, str]:
 
     ok2, msg2, _ = send_attendance(token, action)
     if not ok2:
-        # احتمال انتهاء التوكن
         if "HTTP 401" in msg2:
             clear_token_cache()
         return False, f"فشل إرسال الطلب: {msg2}"
@@ -617,10 +592,6 @@ def parse_hhmm(s: str) -> Optional[int]:
         return None
 
 def get_auto_window_from_env_or_settings(kind: str) -> Tuple[int, int]:
-    """
-    kind: 'in' أو 'out'
-    أولوية: ENV -> settings -> default window computed
-    """
     if kind == "in":
         s_env = parse_hhmm(AUTO_CHECKIN_START)
         e_env = parse_hhmm(AUTO_CHECKIN_END)
@@ -635,13 +606,6 @@ def get_auto_window_from_env_or_settings(kind: str) -> Tuple[int, int]:
     return get_checkout_window()
 
 def auto_check_job():
-    """
-    يتم استدعاؤها بشكل دوري من Scheduler خارجي (مثلاً كل دقيقة).
-    تقوم بـ:
-    - إعادة ضبط الحالة يومياً
-    - توليد أوقات 7 صباحاً (إذا تم استدعاؤها في ذلك الوقت)
-    - تنفيذ دخول/خروج ضمن نافذة السماح المحددة
-    """
     try:
         load_auto_state()
         reset_auto_state_if_new_day()
@@ -667,22 +631,16 @@ def auto_check_job():
             log("📅 AUTO_JOB: عطلة (جمعة/سبت) - لا يوجد تنفيذ")
             return
 
-        # 1) توليد الأوقات عند 7 صباحاً (إذا تم الاستدعاء في ذلك الوقت)
         if now.hour == 7:
             generate_daily_times_at_7am()
 
-        # 2) تحقق إنجاز الدخول/الخروج
         with auto_state_lock:
             done_in = bool(auto_state.get("done_in", False))
             done_out = bool(auto_state.get("done_out", False))
 
-        # دخول
         if auto_in_enabled and not done_in:
             s, e = get_auto_window_from_env_or_settings("in")
-            with settings_lock:
-                window_min = int(settings.get("window_min", DEFAULT_WINDOW_MIN))
             if not within_window(nmin, s, e, 0):
-                # خارج وقت الدخول
                 msg = (
                     f"⛔ ممنوع تسجيل الدخول الآن\n"
                     f"الوقت الحالي: {fmt_minutes(nmin)}\n"
@@ -691,7 +649,6 @@ def auto_check_job():
                 log(msg)
                 if weekday not in (4, 5):
                     telegram(msg)
-                # لا نغيّر done_in هنا حتى نسمح بمحاولة لاحقة إذا وصل الاستدعاء داخل الوقت المسموح
             else:
                 log("🟢 AUTO_JOB: بدء تسجيل الدخول الآلي...")
                 ok, message = perform_attendance("checkin")
@@ -704,7 +661,6 @@ def auto_check_job():
                     telegram(status_msg)
                 persist_auto_state()
 
-        # خروج
         if auto_out_enabled and not done_out:
             s, e = get_auto_window_from_env_or_settings("out")
             if not within_window(nmin, s, e, 0):
@@ -716,7 +672,6 @@ def auto_check_job():
                 log(msg)
                 if weekday not in (4, 5):
                     telegram(msg)
-                # لا نغيّر done_out هنا حتى نسمح بمحاولة لاحقة إذا وصل الاستدعاء داخل الوقت المسموح
             else:
                 log("🔴 AUTO_JOB: بدء تسجيل الخروج الآلي...")
                 ok, message = perform_attendance("checkout")
@@ -736,32 +691,46 @@ def auto_check_job():
 # دوال مساعدة للمسارات الجديدة
 # ------------------------------
 def get_employee_history() -> List[Dict[str, Any]]:
-    """
-    محاولة استخراج سجل الحضور من بيانات الموظف.
-    إذا لم يتوفر، نعيد قائمة فارغة.
-    """
     token = get_token()
     if not token:
         return []
     ok, msg, data = fetch_employee_info(token)
     if not ok:
         return []
-    # محاولة العثور على سجل الحضور في البيانات
-    # قد يكون في مفتاح "attendance" أو "transactions" أو "history"
     history = []
     if isinstance(data, dict):
-        # تجربة مفاتيح محتملة
         for key in ["attendance", "transactions", "history", "records"]:
             if key in data and isinstance(data[key], list):
                 history = data[key]
                 break
-        # إذا لم نجد، قد يكون داخل "data"
         if not history and "data" in data and isinstance(data["data"], dict):
             for key in ["attendance", "transactions", "history", "records"]:
                 if key in data["data"] and isinstance(data["data"][key], list):
                     history = data["data"][key]
                     break
     return history
+
+# ------------------------------
+# ✅ Patch helpers: APIKEY check + simple CORS for /updateToken
+# ------------------------------
+def _extract_api_key_from_request(body: Dict[str, Any]) -> str:
+    # from header
+    hdr = request.headers.get("x-api-key", "") or request.headers.get("X-API-KEY", "")
+    hdr = str(hdr).strip()
+    if hdr:
+        return hdr
+    # from json
+    return str(body.get("apikey", "")).strip()
+
+def _corsify(resp):
+    # Minimal CORS (helps if any future frontend hits it)
+    try:
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, x-api-key"
+    except Exception:
+        pass
+    return resp
 
 # ------------------------------
 # Flask Routes
@@ -837,7 +806,6 @@ def clear_token_route():
 def save_settings_route():
     body = request.get_json(silent=True) or {}
     with settings_lock:
-        # تحديث القيم بحذر
         for k in [
             "start_min", "end_min", "window_min",
             "prep_start_min", "prep_end_min",
@@ -848,7 +816,6 @@ def save_settings_route():
             if k in body:
                 settings[k] = body[k]
 
-        # تأكيد النوع للأرقام
         for k in ["start_min","end_min","window_min","prep_start_min","prep_end_min",
                   "checkin_start","checkin_end","checkout_start","checkout_end","randomize_minutes"]:
             if k in settings and settings[k] is not None:
@@ -909,14 +876,11 @@ def schedule_view():
 
 @app.route("/auto-job", methods=["GET", "POST"])
 def auto_job_route():
-    # هذا المسار يُستخدم لاستدعاء الأوتو من Cron خارجي
     auto_check_job()
     return jsonify({"ok": True, "message": "AUTO_JOB executed"})
 
-# --- المسارات الجديدة المطلوبة من الواجهة ---
 @app.route("/autoon", methods=["POST"])
 def auto_on():
-    """تفعيل النظام الآلي"""
     with settings_lock:
         settings["auto_enabled"] = True
     try:
@@ -930,7 +894,6 @@ def auto_on():
 
 @app.route("/autooff", methods=["POST"])
 def auto_off():
-    """إيقاف النظام الآلي مؤقتًا"""
     with settings_lock:
         settings["auto_enabled"] = False
     try:
@@ -944,20 +907,16 @@ def auto_off():
 
 @app.route("/force-auto-check", methods=["GET", "POST"])
 def force_auto_check():
-    """تنفيذ دورة التحقق الآلي فورًا"""
     auto_check_job()
     return jsonify({"ok": True, "message": "تم تنفيذ التحقق الآلي"})
 
 @app.route("/generate-daily-times", methods=["POST"])
 def generate_daily_times():
-    """توليد أوقات اليوم (يمكن استدعاؤه في أي وقت)"""
-    # نسمح بالتوليد حتى لو لم تكن الساعة 7
-    generate_daily_times_at_7am()  # الدالة تتأكد من عدم التكرار
+    generate_daily_times_at_7am()
     return jsonify({"ok": True, "message": "تم توليد الأوقات اليومية"})
 
 @app.route("/reset-auto-state", methods=["POST"])
 def reset_auto_state_route():
-    """إعادة تعيين حالة اليوم (done_in, done_out)"""
     with auto_state_lock:
         auto_state["done_in"] = False
         auto_state["done_out"] = False
@@ -967,16 +926,35 @@ def reset_auto_state_route():
     telegram("🔄 تم إعادة تعيين حالة التشغيل الآلي")
     return jsonify({"ok": True, "message": "تم إعادة تعيين الحالة"})
 
-@app.route("/updateToken", methods=["POST"])
+# ✅ Patch: OPTIONS support (preflight)
+@app.route("/updateToken", methods=["POST", "OPTIONS"])
 def update_token_route():
-    if not SHOW_TOKEN_MANAGEMENT:
-        return jsonify({"ok": False, "message": "إدارة التوكن مخفية"}), 403
+    if request.method == "OPTIONS":
+        return _corsify(jsonify({"ok": True}))
+
     body = request.get_json(silent=True) or {}
     token = str(body.get("token", "")).strip()
+
+    # ✅ Allow via SHOW_TOKEN_MANAGEMENT OR via UPDATE_TOKEN_APIKEY
+    if not SHOW_TOKEN_MANAGEMENT:
+        if not UPDATE_TOKEN_APIKEY:
+            # لا إدارة توكن، ولا APIKEY مضبوط
+            resp = jsonify({"ok": False, "message": "إدارة التوكن مخفية (فعّل SHOW_TOKEN_MANAGEMENT أو ضع UPDATE_TOKEN_APIKEY)"})
+            return _corsify(resp), 403
+
+        incoming_key = _extract_api_key_from_request(body)
+        if not incoming_key or incoming_key != UPDATE_TOKEN_APIKEY:
+            resp = jsonify({"ok": False, "message": "APIKEY غير صحيح"})
+            return _corsify(resp), 403
+
     if not token:
-        return jsonify({"ok": False, "message": "التوكن فارغ"}), 400
+        resp = jsonify({"ok": False, "message": "التوكن فارغ"})
+        return _corsify(resp), 400
+
     set_token(token)
-    return jsonify({"ok": True, "message": "تم تحديث التوكن"})
+    log("✅ تم تحديث التوكن عبر /updateToken")
+    resp = jsonify({"ok": True, "message": "تم تحديث التوكن"})
+    return _corsify(resp)
 
 @app.route("/getToken", methods=["GET"])
 def get_token_route():
@@ -1011,16 +989,13 @@ def debug_token_route():
 def fix_token_route():
     if not SHOW_TOKEN_MANAGEMENT:
         return jsonify({"ok": False, "message": "إدارة التوكن مخفية"}), 403
-    # محاولة استعادة التوكن من الملفات
     recovered = False
     token = ""
-    # حاول من token_backup.txt أولاً
     token = read_file_token(TOKEN_BACKUP_FILE)
     if token:
         set_token(token)
         recovered = True
     else:
-        # حاول من token.txt
         token = read_file_token(TOKEN_FILE)
         if token:
             set_token(token)
@@ -1033,12 +1008,12 @@ def fix_token_route():
 @app.route("/config", methods=["GET"])
 def config_route():
     return jsonify({
-        "show_token_management": SHOW_TOKEN_MANAGEMENT
+        "show_token_management": SHOW_TOKEN_MANAGEMENT,
+        "update_token_apikey_set": bool(UPDATE_TOKEN_APIKEY)
     })
 
 @app.route("/history", methods=["GET"])
 def history_route():
-    """جلب سجل الحضور (محاولة من بيانات الموظف)"""
     history = get_employee_history()
     return jsonify({
         "ok": True,
@@ -1047,7 +1022,6 @@ def history_route():
 
 @app.route("/check", methods=["POST"])
 def check_route():
-    """نقطة نهاية بديلة لـ /checkin (لتوافق الواجهة)"""
     return checkin_route()
 
 @app.route("/checkin", methods=["POST"])
@@ -1064,7 +1038,6 @@ def checkout_route():
 # تشغيل التطبيق
 # ------------------------------
 if __name__ == "__main__":
-    # تحميل الحالة من auto.json عند التشغيل
     try:
         load_auto_state()
         reset_auto_state_if_new_day()
