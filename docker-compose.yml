@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mawared:
+    build: .
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./mawared_data:/app/mawared_data
+      - ./data:/app/data
+    environment:
+      - MAWARED_TOKEN=${MAWARED_TOKEN}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - SHOW_TOKEN_MANAGEMENT=true
+    restart: unless-stopped

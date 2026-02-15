@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mawared Control Panel - Royal Gold</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #ffd700;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Tahoma", "Geneva", "Verdana", sans-serif;
+            text-align: center;
+            padding: 12px;
+            min-height: 100vh;
+            touch-action: manipulation;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 5px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            padding: 18px 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 1.7em;
+            margin-bottom: 6px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            word-wrap: break-word;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 0.95em;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .card {
+            background: rgba(30, 30, 30, 0.95);
+            border: 2px solid #ffd700;
+            padding: 16px 12px;
+            margin: 14px auto;
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h2 {
+            color: #ffd700;
+            margin-bottom: 14px;
+            font-size: 1.3em;
+            border-bottom: 1px solid #ffd700;
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 17px;
+            margin: 8px 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(255, 215, 0, 0.3);
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+            box-shadow: 0 3px 6px rgba(255, 68, 68, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00cc00 0%, #00ff00 100%);
+            box-shadow: 0 3px 6px rgba(0, 204, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            color: #ccc;
+            box-shadow: 0 3px 6px rgba(102, 102, 102, 0.3);
+        }
+        
+        .btn-test {
+            background: linear-gradient(135deg, #0088ff 0%, #00aaff 100%);
+            box-shadow: 0 3px 6px rgba(0, 136, 255, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffaa00 0%, #ffcc00 100%);
+            box-shadow: 0 3px 6px rgba(255, 170, 0, 0.3);
+        }
+        
+        .btn-token-real {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+            box-shadow: 0 3px 6px rgba(155, 89, 182, 0.3) !important;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
+            color: white !important;
+            box-shadow: 0 3px 6px rgba(255, 107, 107, 0.3) !important;
+        }
+        
+        .btn-clock {
+            background: linear-gradient(135deg, #00b894 0%, #00d9a5 100%) !important;
+            color: white !important;
+            box-shadow: 0 3px 6px rgba(0, 184, 148, 0.3) !important;
+        }
+        
+        .status-box {
+            margin-top: 14px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            min-height: 60px;
+            text-align: center;
+            word-break: break-word;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+            font-size: 15px;
+            align-items: flex-start;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #ffd700;
+            min-width: 45%;
+        }
+        
+        .info-value {
+            color: #fff;
+            text-align: left;
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .token-section {
+            margin-top: 16px;
+        }
+        
+        .token-input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            background: #000;
+            color: #fff;
+            font-size: 15px;
+            -webkit-appearance: none;
+        }
+        
+        .footer {
+            margin-top: 25px;
+            color: #777;
+            font-size: 0.85em;
+            padding: 0 10px;
+            line-height: 1.6;
+        }
+        
+        .auto-status {
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        .status-on {
+            background: rgba(0, 255, 0, 0.15);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+        }
+        
+        .status-off {
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff4444;
+            border: 2px solid #ff4444;
+        }
+
+        .status-paused {
+            background: rgba(255, 170, 0, 0.15);
+            color: #ffaa00;
+            border: 2px solid #ffaa00;
+        }
+
+        .result-success {
+            color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #00ff00;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .result-error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ff4444;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .result-pending {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .result-info {
+            color: #0088ff;
+            background: rgba(0, 136, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #0088ff;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .result-warning {
+            color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ffaa00;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        /* تحسينات لعرض السجل */
+        .history-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding: 5px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            padding: 12px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            border-right: 4px solid #ffd700;
+            transition: transform 0.2s;
+        }
+
+        .history-item:hover {
+            transform: translateX(-5px);
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .history-type {
+            font-weight: 600;
+            color: #ffd700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-time {
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .checkin {
+            border-right-color: #00ff00;
+        }
+
+        .checkout {
+            border-right-color: #ff4444;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .button-grid button {
+            margin: 0;
+            min-height: 52px;
+            font-size: 15px;
+        }
+
+        .system-status {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 12px 0;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .badge-success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .badge-danger {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+
+        .badge-warning {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+
+        .badge-info {
+            background: rgba(0, 136, 255, 0.2);
+            color: #0088ff;
+            border: 1px solid #0088ff;
+        }
+        
+        /* إشعارات النظام التلقائي */
+        .auto-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            color: #ffd700;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid #ffd700;
+            z-index: 10000;
+            font-weight: 600;
+            max-width: 300px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            animation: slideInRight 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .auto-notification.success {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .auto-notification.warning {
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+        
+        .auto-notification.error {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* تحسينات للشاشات الصغيرة جداً */
+        @media (max-width: 400px) {
+            body {
+                padding: 10px;
+                font-size: 15px;
+            }
+            
+            .header {
+                padding: 15px 10px;
+                margin-bottom: 14px;
+                top: 8px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .card {
+                padding: 14px 10px;
+                margin: 12px auto;
+            }
+            
+            .card h2 {
+                font-size: 1.2em;
+            }
+            
+            button {
+                padding: 14px 16px;
+                font-size: 16px;
+                min-height: 50px;
+                border-radius: 8px;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .button-grid button {
+                min-height: 48px;
+                font-size: 15px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                margin: 8px 0;
+                padding: 6px 0;
+            }
+            
+            .info-label {
+                margin-bottom: 4px;
+                min-width: 100%;
+            }
+            
+            .info-value {
+                max-width: 100%;
+                font-size: 14px;
+            }
+            
+            .system-status {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .status-badge {
+                width: 100%;
+                margin: 4px 0;
+                padding: 10px;
+            }
+            
+            .status-box {
+                font-size: 14px;
+                padding: 12px;
+                min-height: 55px;
+            }
+            
+            .token-input {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .history-item {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            .history-type {
+                font-size: 14px;
+            }
+            
+            .history-time {
+                font-size: 13px;
+            }
+            
+            .history-container {
+                max-height: 250px;
+            }
+        }
+        
+        /* تحسينات للأجهزة اللوحية */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* تحسينات للشاشات الكبيرة */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            body {
+                padding: 20px;
+            }
+        }
+        
+        /* دعم الوضع الأفقي على الجوال */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .header {
+                position: static;
+                margin-bottom: 10px;
+            }
+            
+            .card {
+                margin: 8px auto;
+                padding: 12px;
+            }
+            
+            button {
+                padding: 10px 12px;
+                min-height: 44px;
+                font-size: 14px;
+            }
+            
+            .history-container {
+                max-height: 200px;
+            }
+        }
+        
+        /* تحسينات لـ iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            button, .card, .header {
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            body {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        }
+        
+        /* تحسينات لعرض التوكن على الجوال */
+        .token-display-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .token-display {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-all;
+            direction: ltr;
+            letter-spacing: 0.5px;
+            line-height: 1.6;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .token-length {
+            color: #ffaa00;
+            font-size: 13px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        /* تأثيرات تحميل */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+            font-size: 32px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        /* تأكيد ظهور جميع الأزرار */
+        #generateTimesBtn, #resetAutoBtn, #forceAutoBtn, #testAutoBtn {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* تحسين تنسيق بطاقة اختبار النظام الآلي */
+        .auto-test-card {
+            border-color: #0088ff !important;
+        }
+        
+        .auto-test-card h2 {
+            border-bottom-color: #0088ff !important;
+        }
+        
+        .time-management-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ffd700;
+        }
+        
+        .time-management-section h3 {
+            color: #00d9a5;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 لوحة التحكم بنظام موارد</h1>
+            <div class="subtitle">Royal Gold System - النسخة المحسنة للجوال</div>
+        </div>
+
+        <!-- بطاقة حالة النظام -->
+        <div class="card">
+            <h2>📊 حالة النظام الآلي</h2>
+            <div id="autoStatus" class="auto-status status-off">🔴 جاري التحميل...</div>
+            
+            <div class="system-status">
+                <div class="status-badge" id="schedulerStatusBadge">⏳ جدولة: جاري التحميل</div>
+                <div class="status-badge" id="tokenStatusBadge">🔐 توكن: جاري التحميل</div>
+                <div class="status-badge" id="employeeStatusBadge">👤 موظف: جاري التحميل</div>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">🕖 وقت الدخول:</span>
+                <span id="inTime" class="info-value">...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">🕓 وقت الخروج:</span>
+                <span id="outTime" class="info-value">...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📅 تاريخ اليوم:</span>
+                <span id="todayDate" class="info-value">...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">⚙️ حالة الجدولة:</span>
+                <span id="schedulerStatus" class="info-value">...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">⚡ وضع التشغيل التلقائي:</span>
+                <span id="autoModeStatus" class="info-value">...</span>
+            </div>
+            
+            <div class="button-grid">
+                <button id="enableAutoBtn" onclick="enableAutoSystem()" class="btn-success">🚀 تشغيل الآلي</button>
+                <button id="disableAutoBtn" onclick="disableAutoSystem()" class="btn-danger">⏸️ إيقاف مؤقت</button>
+            </div>
+            
+            <div id="statusBox" class="status-box">💡 اختر أحد الخيارات أعلاه</div>
+        </div>
+
+        <!-- بطاقة اختبار النظام الآلي -->
+        <div class="card auto-test-card">
+            <h2>🧪 اختبار النظام الآلي</h2>
+            
+            <div class="button-grid">
+                <button id="testAutoBtn" onclick="testAutoSystem()" class="btn-test">🔍 اختبار النظام</button>
+                <button id="forceAutoBtn" onclick="forceAutoCheck()" class="btn-warning">🔧 تحقق فوري</button>
+            </div>
+            
+            <!-- قسم إدارة الأوقات - واضح ومميز -->
+            <div class="time-management-section">
+                <h3>🔄 إدارة الأوقات</h3>
+                
+                <!-- زر توليد الأوقات اليومية - واضح جداً -->
+                <button id="generateTimesBtn" onclick="generateDailyTimes()" class="btn-clock">
+                    ⏰ توليد الأوقات اليومية
+                </button>
+                
+                <!-- زر إعادة تعيين حالة الآلي - واضح جداً -->
+                <button id="resetAutoBtn" onclick="resetAutoState()" class="btn-reset">
+                    🔄 إعادة تعيين الحالة
+                </button>
+            </div>
+            
+            <div id="testBox" class="status-box" style="margin-top: 15px;">
+                💡 اختر أحد الخيارات أعلاه
+                <br><small style="color: #aaa;">✅ زر توليد الأوقات متوفر الآن</small>
+            </div>
+        </div>
+
+        <!-- بطاقة الحضور اليدوي -->
+        <div class="card">
+            <h2>👨‍💼 الحضور والانصراف اليدوي</h2>
+            <div class="button-grid">
+                <button id="checkinBtn" onclick="sendReq('/checkin','manualBox','checkin')" class="btn-success">🟢 تسجيل دخول</button>
+                <button id="checkoutBtn" onclick="sendReq('/checkout','manualBox','checkout')" class="btn-danger">🔴 تسجيل خروج</button>
+            </div>
+            <div id="manualBox" class="status-box">💡 اختر تسجيل دخول أو خروج</div>
+        </div>
+
+        <!-- بطاقة السجل -->
+        <div class="card">
+            <h2>📋 سجل الحضور</h2>
+            <button id="historyBtn" onclick="sendReq('/history','histBox','history')" class="btn-secondary" style="margin-bottom: 15px;">
+                📊 عرض سجل الحضور
+            </button>
+            <div id="histBox" class="status-box">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+                    <div style="color: #ffd700; font-weight: 600; margin-bottom: 10px;">سجل الحضور</div>
+                    <div style="color: #aaa; font-size: 14px;">اضغط على الزر أعلاه لعرض سجل الحضور</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة إدارة التوكن الكاملة -->
+        <div class="card">
+            <h2>🔐 إدارة التوكن الكاملة</h2>
+            
+            <div class="token-section">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="color: #ffd700; font-size: 15px; margin-bottom: 10px; font-weight: 500;">التوكن الحالي الكامل:</div>
+                    <div class="token-display-container">
+                        <div id="fullTokenDisplay" class="token-display">
+                            ⏳ جاري تحميل التوكن من الخادم...
+                        </div>
+                        <div id="tokenLengthDisplay" class="token-length">جاري التحقق...</div>
+                    </div>
+                </div>
+                
+                <div class="button-grid">
+                    <button id="copyTokenBtn" onclick="copyFullToken()" class="btn-success">📋 نسخ التوكن</button>
+                    <button id="copyFieldBtn" onclick="copyTokenField()" class="btn-test">📝 نسخ الحقل</button>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div class="button-grid">
+                        <button id="viewTokenBtn" onclick="viewTokenDetails()" class="btn-secondary">👁️ عرض التفاصيل</button>
+                        <button id="refreshTokenBtn" onclick="refreshToken()" class="btn-warning">🔄 تحديث</button>
+                    </div>
+                </div>
+                
+                <!-- زر لتحميل التوكن الحقيقي -->
+                <div style="margin-top: 15px;">
+                    <button id="loadRealTokenBtn" onclick="loadRealToken()" class="btn-token-real">
+                        🔄 جلب التوكن الحقيقي
+                    </button>
+                </div>
+            </div>
+            
+            <div id="tokenCopyBox" class="status-box">💡 اضغط على أحد الأزرار لنسخ التوكن</div>
+        </div>
+
+        <!-- بطاقة إدارة التوكن (تظهر بناءً على الإعدادات) -->
+        <div class="card" id="tokenManagementCard" style="display: none;">
+            <h2>🔐 إدارة التوكن</h2>
+            <div class="token-section">
+                <input type="text" id="tokenInput" class="token-input" placeholder="أدخل التوكن الجديد هنا...">
+                <div class="button-grid">
+                    <button id="updateTokenBtn" onclick="updateToken()" class="btn-secondary">💾 حفظ التوكن</button>
+                    <button id="getTokenBtn" onclick="getCurrentToken()" class="btn-secondary">👁️ عرض التوكن</button>
+                </div>
+                <div class="button-grid">
+                    <button id="initEmployeeBtn" onclick="forceInitEmployee()" class="btn-test">🔄 إعادة تهيئة</button>
+                    <button id="checkEmployeeBtn" onclick="checkEmployeeInfo()" class="btn-secondary">👤 فحص البيانات</button>
+                </div>
+                <div class="button-grid">
+                    <button id="debugTokenBtn" onclick="debugToken()" class="btn-warning">🐛 فحص التوكن</button>
+                    <button id="fixTokenBtn" onclick="fixToken()" class="btn-warning">🔧 إصلاح التوكن</button>
+                </div>
+            </div>
+            <div id="tokenBox" class="status-box">💡 أدخل التوكن أو اضغط لعرض الحالي</div>
+        </div>
+
+        <!-- معلومات الخادم -->
+        <div class="card">
+            <h2>🌐 معلومات الخادم</h2>
+            <button id="healthBtn" onclick="checkHealth()" class="btn-secondary">❤️ فحص صحة الخادم</button>
+            <div id="healthBox" class="status-box">💡 اضغط لفحص حالة الخادم</div>
+        </div>
+
+        <div class="footer">
+            <p>Made with ❤️ by Royal Gold System</p>
+            <p>⏰ آخر تحديث: <span id="currentTime"></span></p>
+            <p style="color: #00d9a5; font-size: 12px; margin-top: 5px;">✅ زر توليد الأوقات متوفر الآن في قسم "اختبار النظام الآلي"</p>
+        </div>
+    </div>
+
+    <script>
+        // ===== متغيرات التوكن الحقيقي =====
+        let REAL_TOKEN = null;
+        let TOKEN_LENGTH = 0;
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // ===== نظام منع التكرار محسّن =====
+        let buttonCooldown = {
+            checkin: 0,
+            checkout: 0,
+            enableAuto: 0,
+            disableAuto: 0,
+            testAuto: 0,
+            forceAuto: 0,
+            generateTimes: 0,
+            resetAuto: 0,
+            loadToken: 0,
+            updateToken: 0,
+            initEmployee: 0,
+            health: 0
+        };
+        
+        const COOLDOWN_TIME = 5000; // 5 ثواني
+        
+        function isButtonCooledDown(buttonType) {
+            const now = Date.now();
+            if (now - buttonCooldown[buttonType] < COOLDOWN_TIME) {
+                return false;
+            }
+            buttonCooldown[buttonType] = now;
+            return true;
+        }
+        
+        function setButtonProcessing(buttonId, isProcessing) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.disabled = isProcessing;
+                button.style.opacity = isProcessing ? '0.6' : '1';
+            }
+        }
+        
+        // ===== منع النقر المتعدد =====
+        let isProcessing = {
+            checkin: false,
+            checkout: false,
+            auto: false,
+            history: false,
+            token: false,
+            health: false,
+            reset: false,
+            forceAuto: false,
+            generateTimes: false
+        };
+
+        function setProcessing(type, state) {
+            if (type in isProcessing) {
+                isProcessing[type] = state;
+                const buttonMap = {
+                    checkin: 'checkinBtn',
+                    checkout: 'checkoutBtn',
+                    history: 'historyBtn',
+                    auto: 'enableAutoBtn',
+                    token: 'updateTokenBtn',
+                    health: 'healthBtn',
+                    reset: 'resetAutoBtn',
+                    forceAuto: 'forceAutoBtn',
+                    generateTimes: 'generateTimesBtn'
+                };
+                
+                if (buttonMap[type]) {
+                    setButtonProcessing(buttonMap[type], state);
+                }
+            }
+        }
+
+        function isProcessingAny() {
+            return Object.values(isProcessing).some(v => v === true);
+        }
+
+        // تحميل الإعدادات عند بدء التشغيل
+        function loadConfig() {
+            fetch("/config")
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.json();
+            })
+            .then(config => {
+                if (config.show_token_management) {
+                    document.getElementById("tokenManagementCard").style.display = 'block';
+                }
+            })
+            .catch(e => {
+                console.error("Error loading config:", e);
+            });
+        }
+
+        // تحديث الوقت الحالي
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('ar-SA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        // تحديث الجدول الزمني
+        function updateSchedule() {
+            fetch("/schedule")
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.json();
+            })
+            .then(data => {
+                const statusElement = document.getElementById("autoStatus");
+                const schedulerBadge = document.getElementById("schedulerStatusBadge");
+                
+                if (data.enabled) {
+                    if (data.scheduler_paused) {
+                        statusElement.textContent = "🟡 النظام الآلي متوقف مؤقتاً";
+                        statusElement.className = "auto-status status-paused";
+                        schedulerBadge.textContent = "⏸️ جدولة: متوقفة مؤقتاً";
+                        schedulerBadge.className = "status-badge badge-warning";
+                    } else {
+                        statusElement.textContent = "🟢 النظام الآلي مفعل";
+                        statusElement.className = "auto-status status-on";
+                        schedulerBadge.textContent = "✅ جدولة: نشطة";
+                        schedulerBadge.className = "status-badge badge-success";
+                    }
+                } else {
+                    statusElement.textContent = "🔴 النظام الآلي متوقف";
+                    statusElement.className = "auto-status status-off";
+                    schedulerBadge.textContent = "❌ جدولة: متوقفة";
+                    schedulerBadge.className = "status-badge badge-danger";
+                }
+
+                document.getElementById("inTime").textContent = 
+                    (data.checkin.start_str || "--:--") + " → " + (data.checkin.end_str || "--:--");
+                document.getElementById("outTime").textContent = 
+                    (data.checkout.start_str || "--:--") + " → " + (data.checkout.end_str || "--:--");
+                
+                // تحديث تاريخ اليوم
+                const today = new Date();
+                document.getElementById("todayDate").textContent = today.toLocaleDateString('ar-SA', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // تحديث حالة التوكن والموظف
+                updateSystemStatus();
+            })
+            .catch(e => {
+                console.error("Error updating schedule:", e);
+                document.getElementById("autoStatus").textContent = "⚠️ خطأ في الاتصال";
+                document.getElementById("autoStatus").className = "auto-status status-off";
+            });
+        }
+
+        // تحديث حالة النظام
+        function updateSystemStatus() {
+            // فحص صحة التوكن
+            fetch("/health")
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.json();
+            })
+            .then(health => {
+                const tokenBadge = document.getElementById("tokenStatusBadge");
+                if (health.token_status === "exists") {
+                    tokenBadge.textContent = "✅ توكن: موجود";
+                    tokenBadge.className = "status-badge badge-success";
+                } else {
+                    tokenBadge.textContent = "❌ توكن: مفقود";
+                    tokenBadge.className = "status-badge badge-danger";
+                }
+            })
+            .catch(e => {
+                console.error("Error checking token status:", e);
+            });
+
+            // فحص بيانات الموظف
+            fetch("/employee-info")
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.json();
+            })
+            .then(employee => {
+                const employeeBadge = document.getElementById("employeeStatusBadge");
+                if (employee.ok && employee.data) {
+                    const empId = employee.data.employeeID || employee.data.employeeId || '';
+                    employeeBadge.textContent = "✅ موظف: " + (empId ? empId.substring(0, 8) + "..." : "مجهول");
+                    employeeBadge.className = "status-badge badge-success";
+                } else {
+                    employeeBadge.textContent = "❌ موظف: غير مهيئ";
+                    employeeBadge.className = "status-badge badge-danger";
+                }
+            })
+            .catch(e => {
+                console.error("Error checking employee info:", e);
+            });
+        }
+
+        // دالة محسنة لعرض النتائج
+        function displayResult(targetBox, result) {
+            const element = document.getElementById(targetBox);
+            
+            if (result.ok) {
+                element.innerHTML = `<div class="result-success">✅ ${result.message}</div>`;
+            } else {
+                element.innerHTML = `<div class="result-error">❌ ${result.message}</div>`;
+            }
+        }
+
+        // دالة لعرض السجل
+        function displayHistory(historyData) {
+            const histBox = document.getElementById("histBox");
+            
+            if (!historyData.ok || !historyData.records || historyData.records.length === 0) {
+                histBox.innerHTML = `<div class='result-pending'>📭 لا توجد سجلات حضور لهذا اليوم</div>`;
+                return;
+            }
+            
+            let html = `<div style='margin-bottom: 15px; font-weight: 600; font-size: 16px;'>📋 سجل الحضور:</div>
+                       <div class="history-container">`;
+            
+            const recordsByDate = {};
+            const seenRecords = new Set();
+            
+            historyData.records.forEach(transaction => {
+                if (!transaction.transactionTime) return;
+                
+                const timeKey = transaction.transactionTime + transaction.transactionType;
+                if (seenRecords.has(timeKey)) return;
+                seenRecords.add(timeKey);
+                
+                const fullTime = transaction.transactionTime;
+                let datePart = '';
+                let timePart = '';
+                
+                if (fullTime.includes('T')) {
+                    const parts = fullTime.split('T');
+                    datePart = parts[0];
+                    timePart = parts[1] ? parts[1].substring(0, 8) : '';
+                } else if (fullTime.includes(' ')) {
+                    const parts = fullTime.split(' ');
+                    datePart = parts[0];
+                    timePart = parts[1] ? parts[1].substring(0, 8) : '';
+                } else {
+                    datePart = fullTime;
+                    timePart = '';
+                }
+                
+                const arabicDate = convertToArabicDate(datePart);
+                
+                if (!recordsByDate[arabicDate]) {
+                    recordsByDate[arabicDate] = [];
+                }
+                
+                const type = transaction.transactionType;
+                const isCheckin = type === 'دخول' || type.includes('دخول') || type.includes('In') || type.includes('Checkin');
+                const icon = isCheckin ? '🟢' : '🔴';
+                const typeText = isCheckin ? 'دخول' : 'خروج';
+                
+                recordsByDate[arabicDate].push({
+                    time: timePart,
+                    type: typeText,
+                    icon: icon,
+                    fullType: type
+                });
+            });
+            
+            const sortedDates = Object.keys(recordsByDate).sort((a, b) => {
+                return new Date(b) - new Date(a);
+            });
+            
+            if (sortedDates.length === 0) {
+                html += `<div class='result-pending'>📭 لا توجد سجلات فريدة</div>`;
+            } else {
+                sortedDates.forEach(date => {
+                    html += `<div style="margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.05); border-radius: 8px;">`;
+                    html += `<div style="font-weight: 600; color: #ffd700; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #444;">📅 ${date}</div>`;
+                    
+                    recordsByDate[date].forEach(record => {
+                        html += `
+                            <div class="history-item ${record.type === 'دخول' ? 'checkin' : 'checkout'}" style="margin: 5px 0;">
+                                <span class="history-type">${record.icon} ${record.type}</span>
+                                <span class="history-time">${record.time || '--:--:--'}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                });
+            }
+            
+            html += `</div>`;
+            histBox.innerHTML = html;
+        }
+
+        // دالة لتحويل التاريخ إلى تنسيق عربي
+        function convertToArabicDate(dateStr) {
+            if (!dateStr) return 'غير محدد';
+            
+            try {
+                if (dateStr.includes('-')) {
+                    const [year, month, day] = dateStr.split('-').map(Number);
+                    const months = [
+                        'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                        'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+                    ];
+                    return `${day} ${months[month - 1]} ${year}`;
+                }
+                else if (dateStr.includes('/')) {
+                    const parts = dateStr.split('/');
+                    let year, month, day;
+                    
+                    if (parts.length === 3) {
+                        year = parseInt(parts[0]);
+                        month = parseInt(parts[1]);
+                        day = parseInt(parts[2]);
+                    } else {
+                        day = parseInt(parts[0]);
+                        month = parseInt(parts[1]);
+                        year = parseInt(parts[2]);
+                    }
+                    
+                    const months = [
+                        'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                        'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+                    ];
+                    
+                    if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+                        return `${day} ${months[month - 1]} ${year}`;
+                    }
+                }
+            } catch (e) {
+                console.error('Error converting date:', e);
+            }
+            
+            return dateStr;
+        }
+
+        // اختبار النظام الآلي
+        function testAutoSystem() {
+            if (!isButtonCooledDown('testAuto')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("testBox").innerHTML = `<div class="result-pending">🔍 جاري اختبار النظام الآلي...</div>`;
+            
+            fetch("/schedule")
+            .then(r => r.json())
+            .then(data => {
+                const now = new Date();
+                const currentTime = now.toTimeString().substr(0, 5);
+                
+                let html = `<div class="result-info">`;
+                html += `<strong>🧪 اختبار النظام الآلي:</strong><br>`;
+                html += `🕒 الوقت الحالي: ${currentTime}<br>`;
+                html += `📅 تاريخ اليوم: ${now.toLocaleDateString('ar-SA')}<br>`;
+                html += `⚙️ حالة النظام: ${data.enabled ? (data.scheduler_paused ? '🟡 متوقف مؤقتاً' : '🟢 مفعل') : '🔴 متوقف'}<br>`;
+                html += `🟢 وقت الدخول: ${data.checkin.start_str || '--:--'} → ${data.checkin.end_str || '--:--'}<br>`;
+                html += `🔴 وقت الخروج: ${data.checkout.start_str || '--:--'} → ${data.checkout.end_str || '--:--'}<br>`;
+                html += `✅ تم الدخول: ${data.today?.done_in ? 'نعم' : 'لا'}<br>`;
+                html += `✅ تم الخروج: ${data.today?.done_out ? 'نعم' : 'لا'}`;
+                html += `</div>`;
+                
+                document.getElementById("testBox").innerHTML = html;
+            })
+            .catch(e => {
+                document.getElementById("testBox").innerHTML = `<div class="result-error">❌ خطأ في الاختبار: ${e.message}</div>`;
+            });
+        }
+
+        // تشغيل النظام الآلي
+        function enableAutoSystem() {
+            if (!isButtonCooledDown('enableAuto')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("statusBox").innerHTML = `<div class="result-pending">⏳ جاري تشغيل النظام الآلي...</div>`;
+            setProcessing('auto', true);
+            
+            fetch("/autoon", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                displayResult("statusBox", res);
+                setTimeout(updateSchedule, 2000);
+                setProcessing('auto', false);
+                
+                if (res.ok) {
+                    showAutoNotification("✅ تم تشغيل النظام الآلي بنجاح", "success");
+                }
+            })
+            .catch(e => {
+                document.getElementById("statusBox").innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                setProcessing('auto', false);
+            });
+        }
+
+        // إيقاف النظام الآلي مؤقتاً
+        function disableAutoSystem() {
+            if (!isButtonCooledDown('disableAuto')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("statusBox").innerHTML = `<div class="result-pending">⏳ جاري إيقاف النظام الآلي مؤقتاً...</div>`;
+            setProcessing('auto', true);
+            
+            fetch("/autooff", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                displayResult("statusBox", res);
+                setTimeout(updateSchedule, 2000);
+                setProcessing('auto', false);
+                
+                if (res.ok) {
+                    showAutoNotification("⏸️ تم إيقاف النظام الآلي مؤقتاً", "warning");
+                }
+            })
+            .catch(e => {
+                document.getElementById("statusBox").innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                setProcessing('auto', false);
+            });
+        }
+
+        // تحقق آلي فوري
+        function forceAutoCheck() {
+            if (!isButtonCooledDown('forceAuto')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("testBox").innerHTML = `<div class="result-pending">🔧 جاري التحقق الآلي الفوري...</div>`;
+            setProcessing('forceAuto', true);
+            
+            fetch("/force-auto-check", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                displayResult("testBox", res);
+                setTimeout(updateSchedule, 2000);
+                setProcessing('forceAuto', false);
+            })
+            .catch(e => {
+                document.getElementById("testBox").innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                setProcessing('forceAuto', false);
+            });
+        }
+
+        // دالة جديدة: توليد الأوقات اليومية
+        function generateDailyTimes() {
+            if (!isButtonCooledDown('generateTimes')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("testBox").innerHTML = `<div class="result-pending">⏰ جاري توليد الأوقات اليومية...</div>`;
+            setProcessing('generateTimes', true);
+            
+            fetch("/generate-daily-times", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById("testBox").innerHTML = `<div class="result-success">✅ ${res.message}</div>`;
+                    showAutoNotification("⏰ تم توليد الأوقات اليومية بنجاح", "success");
+                    
+                    setTimeout(updateSchedule, 1000);
+                } else {
+                    document.getElementById("testBox").innerHTML = `<div class="result-error">❌ ${res.message || "فشل توليد الأوقات"}</div>`;
+                }
+                setProcessing('generateTimes', false);
+            })
+            .catch(e => {
+                document.getElementById("testBox").innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                setProcessing('generateTimes', false);
+            });
+        }
+
+        // دالة جديدة: إعادة تعيين حالة التشغيل الآلي
+        function resetAutoState() {
+            if (!isButtonCooledDown('resetAuto')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            if (!confirm("⚠️ هل تريد إعادة تعيين حالة التشغيل الآلي؟\n\nهذا سيؤدي إلى:\n• إعادة تعيين حالات 'تم الدخول' و 'تم الخروج'\n• توليد أوقات دخول وخروج جديدة\n• الاستمرار في التشغيل الآلي")) {
+                return;
+            }
+            
+            document.getElementById("testBox").innerHTML = `<div class="result-pending">🔄 جاري إعادة تعيين حالة التشغيل الآلي...</div>`;
+            setProcessing('reset', true);
+            
+            fetch("/reset-auto-state", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById("testBox").innerHTML = `<div class="result-success">✅ ${res.message}</div>`;
+                    showAutoNotification("🔄 تم إعادة تعيين حالة التشغيل الآلي", "success");
+                    
+                    setTimeout(updateSchedule, 1000);
+                } else {
+                    document.getElementById("testBox").innerHTML = `<div class="result-error">❌ ${res.message || "فشل إعادة التعيين"}</div>`;
+                }
+                setProcessing('reset', false);
+            })
+            .catch(e => {
+                document.getElementById("testBox").innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                setProcessing('reset', false);
+            });
+        }
+
+        // إرسال طلبات API
+        function sendReq(url, targetBox, type) {
+            const targetElement = document.getElementById(targetBox);
+            
+            if (!isButtonCooledDown(type)) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            if (isProcessing[type]) {
+                showAutoNotification("⏳ جاري معالجة طلب سابق، الرجاء الانتظار...", "warning");
+                return;
+            }
+            
+            if (isProcessingAny() && (!type || type === 'checkin' || type === 'checkout')) {
+                showAutoNotification("⏳ هناك عملية جارية بالفعل، الرجاء الانتظار...", "warning");
+                return;
+            }
+            
+            if (type) {
+                setProcessing(type, true);
+            }
+            
+            if (url === '/history') {
+                targetElement.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="loading-spinner">🔄</div>
+                        <div style="color: #ffd700; font-weight: 600; margin-bottom: 10px;">جاري تحميل السجل...</div>
+                        <div style="color: #aaa; font-size: 14px;">يرجاء الانتظار قليلاً</div>
+                    </div>
+                `;
+            } else {
+                targetElement.innerHTML = `<div class="result-pending">⏳ جاري التنفيذ...</div>`;
+            }
+            
+            fetch(url, {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                if (url === '/history') {
+                    displayHistory(res);
+                } else {
+                    displayResult(targetBox, res);
+                }
+                
+                if (type) {
+                    setTimeout(() => {
+                        setProcessing(type, false);
+                    }, 2000);
+                }
+            })
+            .catch(e => {
+                targetElement.innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+                if (type) {
+                    setProcessing(type, false);
+                }
+            });
+        }
+
+        // تحديث التوكن
+        function updateToken() {
+            if (!isButtonCooledDown('updateToken')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            const token = document.getElementById("tokenInput").value.trim();
+            if (!token) {
+                showAutoNotification("⚠️ الرجاء إدخال التوكن أولاً", "warning");
+                return;
+            }
+            
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⏳ جاري تحديث التوكن...</div>`;
+            setProcessing('token', true);
+            
+            fetch("/updateToken", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({token: token})
+            })
+            .then(r => r.json())
+            .then(res => {
+                displayResult("tokenBox", res);
+                document.getElementById("tokenInput").value = "";
+                setProcessing('token', false);
+                setTimeout(updateSchedule, 2000);
+                loadRealToken();
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+                setProcessing('token', false);
+            });
+        }
+
+        // الحصول على التوكن الحالي
+        function getCurrentToken() {
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⏳ جاري جلب التوكن...</div>`;
+            
+            fetch("/getToken")
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok && data.token) {
+                    document.getElementById("tokenBox").innerHTML = `<div class="result-success">🔐 التوكن الحالي: ${data.token.substring(0, 20)}...</div>`;
+                    document.getElementById("tokenInput").value = data.token;
+                } else {
+                    document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⚠️ لا يوجد توكن محفوظ</div>`;
+                }
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+            });
+        }
+
+        // فحص صحة الخادم
+        function checkHealth() {
+            if (!isButtonCooledDown('health')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("healthBox").innerHTML = `<div class="result-pending">⏳ جاري فحص الخادم...</div>`;
+            setProcessing('health', true);
+            
+            fetch("/health")
+            .then(r => r.json())
+            .then(data => {
+                const schedulerStatus = data.scheduler_running ? 
+                    (data.scheduler_paused ? '⏸️ متوقفة مؤقتاً' : '🟢 نشطة') : '🔴 متوقفة';
+                const tokenStatus = data.token_status === 'exists' ? '✅ موجود' : '❌ مفقود';
+                
+                document.getElementById("healthBox").innerHTML = 
+                    `<div class="result-success">
+                        ✅ الخادم يعمل بشكل جيد<br>
+                        🕒 الوقت: ${new Date(data.time).toLocaleTimeString('ar-SA')}<br>
+                        ⚙️ النظام الآلي: ${data.auto_enabled ? "مفعل" : "متوقف"}<br>
+                        📊 الجدولة: ${schedulerStatus}<br>
+                        🔐 التوكن: ${tokenStatus}
+                    </div>`;
+                setProcessing('health', false);
+            })
+            .catch(e => {
+                document.getElementById("healthBox").innerHTML = `<div class="result-error">❌ خطأ في فحص الخادم: ${e.message}</div>`;
+                setProcessing('health', false);
+            });
+        }
+
+        // إعادة تهيئة بيانات الموظف
+        function forceInitEmployee() {
+            if (!isButtonCooledDown('initEmployee')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⏳ جاري إعادة تهيئة البيانات...</div>`;
+            
+            fetch("/force-init", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                displayResult("tokenBox", res);
+                setTimeout(updateSchedule, 2000);
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+            });
+        }
+
+        // فحص بيانات الموظف
+        function checkEmployeeInfo() {
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⏳ جاري فحص بيانات الموظف...</div>`;
+            
+            fetch("/employee-info")
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok && data.data) {
+                    document.getElementById("tokenBox").innerHTML = 
+                        `<div class="result-success">
+                            ✅ بيانات الموظف موجودة<br>
+                            🆔 الرقم: ${data.data.employeeID || data.data.employeeId || 'غير معروف'}<br>
+                            📍 الموقع: ${data.data.locationId || 'غير معروف'}
+                        </div>`;
+                } else {
+                    document.getElementById("tokenBox").innerHTML = 
+                        `<div class="result-error">
+                            ❌ لا توجد بيانات موظف<br>
+                            💡 يرجى إعادة التهيئة
+                        </div>`;
+                }
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+            });
+        }
+
+        // فحص التوكن
+        function debugToken() {
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">🐛 جاري فحص حالة التوكن...</div>`;
+            
+            fetch("/debug-token")
+            .then(r => r.json())
+            .then(data => {
+                let html = `<div class="result-info">`;
+                html += `<strong>🐛 فحص التوكن:</strong><br>`;
+                html += `📁 ملف التوكن: ${data.token_file_exists ? '✅ موجود' : '❌ مفقود'}<br>`;
+                html += `💾 النسخة الاحتياطية: ${data.backup_file_exists ? '✅ موجود' : '❌ مفقود'}<br>`;
+                html += `🔐 التوكن الحالي: ${data.current_token_length} حرف<br>`;
+                html += `🌐 متغير البيئة: ${data.environment_token_exists ? '✅ موجود' : '❌ مفقود'}<br>`;
+                html += `📊 ملف الإعدادات: ${data.info_file_exists ? '✅ موجود' : '❌ مفقود'}<br>`;
+                html += `⚙️ ملف الآلي: ${data.auto_file_exists ? '✅ موجود' : '❌ مفقود'}`;
+                html += `</div>`;
+                
+                document.getElementById("tokenBox").innerHTML = html;
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+            });
+        }
+
+        // إصلاح التوكن
+        function fixToken() {
+            document.getElementById("tokenBox").innerHTML = `<div class="result-pending">🔧 جاري محاولة إصلاح التوكن...</div>`;
+            
+            fetch("/fix-token", {method: "POST"})
+            .then(r => r.json())
+            .then(res => {
+                if (res.ok && res.recovered) {
+                    document.getElementById("tokenBox").innerHTML = 
+                        `<div class="result-success">
+                            ✅ تم إصلاح التوكن تلقائياً<br>
+                            📏 الطول: ${res.token_length} حرف
+                        </div>`;
+                } else {
+                    document.getElementById("tokenBox").innerHTML = 
+                        `<div class="result-error">
+                            ❌ فشل الإصلاح التلقائي<br>
+                            💡 يرجى إدخال التوكن يدوياً
+                        </div>`;
+                }
+                setTimeout(updateSchedule, 2000);
+                loadRealToken();
+            })
+            .catch(e => {
+                document.getElementById("tokenBox").innerHTML = `<div class="result-error">❌ خطأ: ${e.message}</div>`;
+            });
+        }
+
+        // === Auto Mode Status Injection ===
+        function updateAutoModeStatus() {
+            fetch("/status")
+                .then(r => {
+                    if (!r.ok) {
+                        throw new Error(`HTTP error! status: ${r.status}`);
+                    }
+                    return r.json();
+                })
+                .then(data => {
+                    const el = document.getElementById("autoModeStatus");
+                    if (!el) return;
+
+                    if (data.settings?.auto_enabled) {
+                        el.textContent = "مفعل";
+                        el.style.color = "#00ff00";
+                    } else {
+                        el.textContent = "متوقف";
+                        el.style.color = "#ff4444";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating auto mode status:", error);
+                    const el = document.getElementById("autoModeStatus");
+                    if (!el) return;
+                    el.textContent = "غير معروف";
+                    el.style.color = "#ffd700";
+                });
+        }
+
+        // ===== إدارة التوكن الحقيقي =====
+
+        // دالة: جلب التوكن الحقيقي من الخادم
+        function loadRealToken() {
+            if (!isButtonCooledDown('loadToken')) {
+                showAutoNotification("⏳ انتظر قليلاً قبل المحاولة مرة أخرى", "warning");
+                return;
+            }
+            
+            const tokenBox = document.getElementById("tokenCopyBox");
+            tokenBox.innerHTML = '<div class="result-pending">⏳ جاري جلب التوكن الحقيقي من الخادم...</div>';
+            
+            fetch("/getToken")
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok && data.token) {
+                    REAL_TOKEN = data.token;
+                    TOKEN_LENGTH = data.length || REAL_TOKEN.length;
+                    
+                    updateTokenDisplay();
+                    
+                    tokenBox.innerHTML = `<div class="result-success">✅ تم جلب التوكن الحقيقي بنجاح! (${TOKEN_LENGTH} حرف)</div>`;
+                    
+                    if (TOKEN_LENGTH > 50) {
+                        showAutoNotification(`✅ تم تحميل التوكن الحقيقي (${TOKEN_LENGTH} حرف)`, "success");
+                    }
+                } else {
+                    REAL_TOKEN = null;
+                    document.getElementById("fullTokenDisplay").textContent = "❌ فشل جلب التوكن";
+                    document.getElementById("tokenLengthDisplay").textContent = "❌ توكن غير متوفر";
+                    tokenBox.innerHTML = '<div class="result-error">❌ ' + (data.message || "فشل جلب التوكن") + '</div>';
+                }
+            })
+            .catch(e => {
+                console.error("Error loading token:", e);
+                tokenBox.innerHTML = `<div class="result-error">❌ خطأ في الاتصال: ${e.message}</div>`;
+            });
+        }
+
+        // دالة: تحديث عرض التوكن
+        function updateTokenDisplay() {
+            if (!REAL_TOKEN) {
+                loadRealToken();
+                return;
+            }
+            
+            const tokenDisplay = document.getElementById("fullTokenDisplay");
+            const lengthDisplay = document.getElementById("tokenLengthDisplay");
+            const isSmallScreen = window.innerWidth <= 400;
+            
+            if (tokenDisplay && lengthDisplay) {
+                let formattedToken;
+                if (isSmallScreen) {
+                    const firstPart = REAL_TOKEN.substring(0, 15);
+                    const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 15);
+                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.style.fontSize = "13px";
+                } else if (isMobile) {
+                    const firstPart = REAL_TOKEN.substring(0, 25);
+                    const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 25);
+                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.style.fontSize = "14px";
+                } else {
+                    const firstPart = REAL_TOKEN.substring(0, 32);
+                    const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 32);
+                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.style.fontSize = "15px";
+                }
+                tokenDisplay.innerHTML = formattedToken;
+                
+                lengthDisplay.textContent = `الطول: ${TOKEN_LENGTH} حرف`;
+                lengthDisplay.style.color = TOKEN_LENGTH > 50 ? "#00ff00" : "#ffaa00";
+            }
+        }
+
+        // دالة: نسخ التوكن الكامل
+        function copyFullToken() {
+            const tokenBox = document.getElementById("tokenCopyBox");
+            
+            if (!REAL_TOKEN) {
+                tokenBox.innerHTML = '<div class="result-warning">⚠️ يرجى تحميل التوكن أولاً</div>';
+                loadRealToken();
+                return;
+            }
+            
+            tokenBox.innerHTML = '<div class="result-pending">⏳ جاري نسخ التوكن...</div>';
+            
+            navigator.clipboard.writeText(REAL_TOKEN).then(() => {
+                tokenBox.innerHTML = '<div class="result-success">✅ تم نسخ التوكن بنجاح!</div>';
+                
+                const tokenDisplay = document.getElementById("fullTokenDisplay").parentElement;
+                tokenDisplay.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
+                tokenDisplay.style.borderColor = "#00ff00";
+                
+                setTimeout(() => {
+                    tokenDisplay.style.backgroundColor = "";
+                    tokenDisplay.style.borderColor = "#ffd700";
+                }, 1000);
+                
+            }).catch(err => {
+                console.error('فشل نسخ التوكن: ', err);
+                const textArea = document.createElement('textarea');
+                textArea.value = REAL_TOKEN;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                tokenBox.innerHTML = '<div class="result-success">✅ تم نسخ التوكن (الطريقة البديلة)!</div>';
+            });
+        }
+
+        // دالة: نسخ التوكن مع الحقل
+        function copyTokenField() {
+            const tokenBox = document.getElementById("tokenCopyBox");
+            
+            if (!REAL_TOKEN) {
+                tokenBox.innerHTML = '<div class="result-warning">⚠️ يرجى تحميل التوكن أولاً</div>';
+                loadRealToken();
+                return;
+            }
+            
+            tokenBox.innerHTML = '<div class="result-pending">⏳ جاري نسخ الحقل...</div>';
+            
+            const tokenField = `TOKEN: ${REAL_TOKEN}`;
+            navigator.clipboard.writeText(tokenField).then(() => {
+                tokenBox.innerHTML = '<div class="result-success">✅ تم نسخ الحقل بنجاح!</div>';
+                
+                const tokenDisplay = document.getElementById("fullTokenDisplay").parentElement;
+                tokenDisplay.style.backgroundColor = "rgba(0, 136, 255, 0.1)";
+                tokenDisplay.style.borderColor = "#0088ff";
+                
+                setTimeout(() => {
+                    tokenDisplay.style.backgroundColor = "";
+                    tokenDisplay.style.borderColor = "#ffd700";
+                }, 1000);
+                
+            }).catch(err => {
+                console.error('فشل نسخ الحقل: ', err);
+                const textArea = document.createElement('textarea');
+                textArea.value = tokenField;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                tokenBox.innerHTML = '<div class="result-success">✅ تم نسخ الحقل (الطريقة البديلة)!</div>';
+            });
+        }
+
+        // دالة: عرض تفاصيل التوكن
+        function viewTokenDetails() {
+            const tokenBox = document.getElementById("tokenCopyBox");
+            
+            if (!REAL_TOKEN) {
+                tokenBox.innerHTML = '<div class="result-warning">⚠️ يرجى تحميل التوكن أولاً</div>';
+                loadRealToken();
+                return;
+            }
+            
+            const token = REAL_TOKEN;
+            const tokenLength = TOKEN_LENGTH;
+            const first10 = token.substring(0, 10);
+            const last10 = token.substring(tokenLength - 10);
+            const isJWT = token.split('.').length === 3;
+            
+            tokenBox.innerHTML = `
+                <div class="result-info">
+                    <strong>🔍 تفاصيل التوكن الحقيقي:</strong><br>
+                    📏 الطول: ${tokenLength} حرف<br>
+                    🔢 التنسيق: ${isJWT ? 'JWT (ثلاث أجزاء)' : 'Bearer Token'}<br>
+                    🏷️ النوع: توكن مصادقة<br>
+                    🔐 البداية: ${first10}...<br>
+                    🔚 النهاية: ...${last10}<br>
+                    📅 وقت الجلب: ${new Date().toLocaleTimeString('ar-SA')}<br>
+                    ⚙️ الاستخدام: نظام موارد - النسخة المحسنة
+                </div>
+            `;
+            
+            const tokenDisplay = document.getElementById("fullTokenDisplay").parentElement;
+            tokenDisplay.style.backgroundColor = "rgba(255, 170, 0, 0.1)";
+            tokenDisplay.style.borderColor = "#ffaa00";
+            
+            setTimeout(() => {
+                tokenDisplay.style.backgroundColor = "";
+                tokenDisplay.style.borderColor = "#ffd700";
+            }, 1500);
+        }
+
+        // دالة: تحديث التوكن
+        function refreshToken() {
+            const tokenBox = document.getElementById("tokenCopyBox");
+            tokenBox.innerHTML = '<div class="result-pending">🔄 جاري تحديث التوكن من الخادم...</div>';
+            
+            const tokenDisplay = document.getElementById("fullTokenDisplay");
+            tokenDisplay.innerHTML = "⏳ جاري التحديث...";
+            tokenDisplay.style.color = "#ffaa00";
+            
+            loadRealToken();
+            
+            setTimeout(() => {
+                tokenDisplay.style.color = "#fff";
+                tokenBox.innerHTML = '<div class="result-success">✅ تم تحديث التوكن!</div>';
+            }, 1000);
+        }
+
+        // دالة: عرض إشعار تلقائي
+        function showAutoNotification(message, type = "info") {
+            const oldNotifications = document.querySelectorAll('.auto-notification');
+            oldNotifications.forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `auto-notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOutRight 0.5s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                }
+            }, 5000);
+        }
+
+        // تحديث عرض التوكن عند تغيير حجم النافذة
+        window.addEventListener('resize', updateTokenDisplay);
+
+        // التهيئة عند تحميل الصفحة
+        window.onload = function() {
+            loadConfig();
+            updateTime();
+            updateSchedule();
+            updateAutoModeStatus();
+            updateTokenDisplay();
+            
+            setTimeout(() => {
+                loadRealToken();
+            }, 1000);
+            
+            setInterval(updateTime, 1000);
+            setInterval(updateSchedule, 30000);
+            setInterval(updateAutoModeStatus, 10000);
+        };
+    </script>
+</body>
+</html>
