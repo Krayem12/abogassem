@@ -1,11 +1,1 @@
-{
-  "enabled": false,
-  "checkin": {
-    "start": "07:00",
-    "end": "07:30"
-  },
-  "checkout": {
-    "start": "15:30",
-    "end": "16:00"
-  }
-}
+
