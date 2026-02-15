@@ -2,7 +2,7 @@
   "enabled": false,
   "checkin": {
     "start": "07:00",
-    "end": "07:30"
+    "end": "07:20"
   },
   "checkout": {
     "start": "15:35",
@@ -10,3 +10,4 @@
   }
 
 }
+
