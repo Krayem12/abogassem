@@ -973,7 +973,7 @@
             });
         }
         
-        // تحديث الجدول الزمني
+        // تحديث الجدول الزمني (محسّن للتعامل مع البيانات المفقودة)
         function updateSchedule() {
             fetch("/schedule")
             .then(r => {
@@ -981,6 +981,8 @@
                 return r.json();
             })
             .then(data => {
+                console.log("Schedule data:", data); // للتشخيص
+                
                 const statusElement = document.getElementById("autoStatus");
                 const schedulerBadge = document.getElementById("schedulerStatusBadge");
                 
@@ -1003,10 +1005,21 @@
                     schedulerBadge.className = "status-badge badge-danger";
                 }
 
-                document.getElementById("inTime").textContent = 
-                    (data.checkin.start_str || "--:--") + " → " + (data.checkin.end_str || "--:--");
-                document.getElementById("outTime").textContent = 
-                    (data.checkout.start_str || "--:--") + " → " + (data.checkout.end_str || "--:--");
+                // عرض أوقات الدخول مع التحقق من وجود البيانات
+                if (data.checkin) {
+                    document.getElementById("inTime").textContent = 
+                        (data.checkin.start_str || "--:--") + " → " + (data.checkin.end_str || "--:--");
+                } else {
+                    document.getElementById("inTime").textContent = "--:-- → --:--";
+                }
+
+                // عرض أوقات الخروج مع التحقق من وجود البيانات
+                if (data.checkout) {
+                    document.getElementById("outTime").textContent = 
+                        (data.checkout.start_str || "--:--") + " → " + (data.checkout.end_str || "--:--");
+                } else {
+                    document.getElementById("outTime").textContent = "--:-- → --:--";
+                }
                 
                 // تحديث تاريخ اليوم
                 const today = new Date();
@@ -1024,6 +1037,10 @@
                 console.error("Error updating schedule:", e);
                 document.getElementById("autoStatus").textContent = "⚠️ خطأ في الاتصال";
                 document.getElementById("autoStatus").className = "auto-status status-off";
+                
+                // في حالة الخطأ، نعرض "--:--" للأوقات
+                document.getElementById("inTime").textContent = "--:-- → --:--";
+                document.getElementById("outTime").textContent = "--:-- → --:--";
             });
         }
 
@@ -1231,8 +1248,19 @@
                 html += `🕒 الوقت الحالي: ${currentTime}<br>`;
                 html += `📅 تاريخ اليوم: ${now.toLocaleDateString('ar-SA')}<br>`;
                 html += `⚙️ حالة النظام: ${data.enabled ? (data.scheduler_paused ? '🟡 متوقف مؤقتاً' : '🟢 مفعل') : '🔴 متوقف'}<br>`;
-                html += `🟢 وقت الدخول: ${data.checkin.start_str || '--:--'} → ${data.checkin.end_str || '--:--'}<br>`;
-                html += `🔴 وقت الخروج: ${data.checkout.start_str || '--:--'} → ${data.checkout.end_str || '--:--'}<br>`;
+                
+                if (data.checkin) {
+                    html += `🟢 وقت الدخول: ${data.checkin.start_str || '--:--'} → ${data.checkin.end_str || '--:--'}<br>`;
+                } else {
+                    html += `🟢 وقت الدخول: --:-- → --:-- (غير مولّد)<br>`;
+                }
+                
+                if (data.checkout) {
+                    html += `🔴 وقت الخروج: ${data.checkout.start_str || '--:--'} → ${data.checkout.end_str || '--:--'}<br>`;
+                } else {
+                    html += `🔴 وقت الخروج: --:-- → --:-- (غير مولّد)<br>`;
+                }
+                
                 html += `✅ تم الدخول: ${data.today?.done_in ? 'نعم' : 'لا'}<br>`;
                 html += `✅ تم الخروج: ${data.today?.done_out ? 'نعم' : 'لا'}`;
                 html += `</div>`;
