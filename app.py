@@ -343,7 +343,10 @@ def build_headers(token: str) -> Dict[str, str]:
         "Accept": "application/json",
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
-        "api_code": API_CODE
+        "apiCode": API_CODE,
+        "api_code": API_CODE,
+        "ApiCode": API_CODE,
+        "API-CODE": API_CODE,
     }
 
 def fetch_employee_info(token: str) -> Tuple[bool, str, Dict[str, Any]]:
@@ -1074,3 +1077,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     log(f"🚀 تشغيل Mawared على المنفذ: {port}")
     app.run(host="0.0.0.0", port=port)
+
