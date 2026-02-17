@@ -12,5 +12,5 @@ services:
       - MAWARED_TOKEN=${MAWARED_TOKEN}
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-      - SHOW_TOKEN_MANAGEMENT=true
+      - SHOW_TOKEN_MANAGEMENT="true"
     restart: unless-stopped

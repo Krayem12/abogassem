@@ -770,7 +770,7 @@
         <div class="card">
             <h2>👨‍💼 الحضور والانصراف اليدوي</h2>
             <div class="button-grid">
-                <button id="checkinBtn" onclick="sendReq('/checkin','manualBox','checkin')" class="btn-success">🟢 تسجيل دخول</button>
+                <button id="checkinBtn" onclick="sendReq('/check','manualBox','checkin')" class="btn-success">🟢 تسجيل دخول</button>
                 <button id="checkoutBtn" onclick="sendReq('/checkout','manualBox','checkout')" class="btn-danger">🔴 تسجيل خروج</button>
             </div>
             <div id="manualBox" class="status-box">💡 اختر تسجيل دخول أو خروج</div>
@@ -973,7 +973,7 @@
             });
         }
         
-        // تحديث الجدول الزمني (محسّن للتعامل مع البيانات المفقودة)
+        // تحديث الجدول الزمني
         function updateSchedule() {
             fetch("/schedule")
             .then(r => {
@@ -981,8 +981,6 @@
                 return r.json();
             })
             .then(data => {
-                console.log("Schedule data:", data); // للتشخيص
-                
                 const statusElement = document.getElementById("autoStatus");
                 const schedulerBadge = document.getElementById("schedulerStatusBadge");
                 
@@ -1005,21 +1003,10 @@
                     schedulerBadge.className = "status-badge badge-danger";
                 }
 
-                // عرض أوقات الدخول مع التحقق من وجود البيانات
-                if (data.checkin) {
-                    document.getElementById("inTime").textContent = 
-                        (data.checkin.start_str || "--:--") + " → " + (data.checkin.end_str || "--:--");
-                } else {
-                    document.getElementById("inTime").textContent = "--:-- → --:--";
-                }
-
-                // عرض أوقات الخروج مع التحقق من وجود البيانات
-                if (data.checkout) {
-                    document.getElementById("outTime").textContent = 
-                        (data.checkout.start_str || "--:--") + " → " + (data.checkout.end_str || "--:--");
-                } else {
-                    document.getElementById("outTime").textContent = "--:-- → --:--";
-                }
+                document.getElementById("inTime").textContent = data.checkin.start + " → " + data.checkin.end;
+                document.getElementById("outTime").textContent = data.checkout.start + " → " + data.checkout.end;
+                document.getElementById("schedulerStatus").textContent = data.scheduler_running ? 
+                    (data.scheduler_paused ? "⏸️ متوقفة مؤقتاً" : "🟢 نشطة") : "🔴 متوقفة";
                 
                 // تحديث تاريخ اليوم
                 const today = new Date();
@@ -1037,10 +1024,6 @@
                 console.error("Error updating schedule:", e);
                 document.getElementById("autoStatus").textContent = "⚠️ خطأ في الاتصال";
                 document.getElementById("autoStatus").className = "auto-status status-off";
-                
-                // في حالة الخطأ، نعرض "--:--" للأوقات
-                document.getElementById("inTime").textContent = "--:-- → --:--";
-                document.getElementById("outTime").textContent = "--:-- → --:--";
             });
         }
 
@@ -1074,9 +1057,8 @@
             })
             .then(employee => {
                 const employeeBadge = document.getElementById("employeeStatusBadge");
-                if (employee.ok && employee.data) {
-                    const empId = employee.data.employeeID || employee.data.employeeId || '';
-                    employeeBadge.textContent = "✅ موظف: " + (empId ? empId.substring(0, 8) + "..." : "مجهول");
+                if (employee.has_data) {
+                    employeeBadge.textContent = "✅ موظف: " + (employee.employeeID ? employee.employeeID.substring(0, 8) + "..." : "مجهول");
                     employeeBadge.className = "status-badge badge-success";
                 } else {
                     employeeBadge.textContent = "❌ موظف: غير مهيئ";
@@ -1248,19 +1230,8 @@
                 html += `🕒 الوقت الحالي: ${currentTime}<br>`;
                 html += `📅 تاريخ اليوم: ${now.toLocaleDateString('ar-SA')}<br>`;
                 html += `⚙️ حالة النظام: ${data.enabled ? (data.scheduler_paused ? '🟡 متوقف مؤقتاً' : '🟢 مفعل') : '🔴 متوقف'}<br>`;
-                
-                if (data.checkin) {
-                    html += `🟢 وقت الدخول: ${data.checkin.start_str || '--:--'} → ${data.checkin.end_str || '--:--'}<br>`;
-                } else {
-                    html += `🟢 وقت الدخول: --:-- → --:-- (غير مولّد)<br>`;
-                }
-                
-                if (data.checkout) {
-                    html += `🔴 وقت الخروج: ${data.checkout.start_str || '--:--'} → ${data.checkout.end_str || '--:--'}<br>`;
-                } else {
-                    html += `🔴 وقت الخروج: --:-- → --:-- (غير مولّد)<br>`;
-                }
-                
+                html += `🟢 وقت الدخول: ${data.checkin.start} → ${data.checkin.end}<br>`;
+                html += `🔴 وقت الخروج: ${data.checkout.start} → ${data.checkout.end}<br>`;
                 html += `✅ تم الدخول: ${data.today?.done_in ? 'نعم' : 'لا'}<br>`;
                 html += `✅ تم الخروج: ${data.today?.done_out ? 'نعم' : 'لا'}`;
                 html += `</div>`;
@@ -1336,7 +1307,7 @@
             document.getElementById("testBox").innerHTML = `<div class="result-pending">🔧 جاري التحقق الآلي الفوري...</div>`;
             setProcessing('forceAuto', true);
             
-            fetch("/force-auto-check", {method: "POST"})
+            fetch("/force-auto-check")
             .then(r => r.json())
             .then(res => {
                 displayResult("testBox", res);
@@ -1513,9 +1484,10 @@
             fetch("/getToken")
             .then(r => r.json())
             .then(data => {
-                if (data.ok && data.token) {
-                    document.getElementById("tokenBox").innerHTML = `<div class="result-success">🔐 التوكن الحالي: ${data.token.substring(0, 20)}...</div>`;
-                    document.getElementById("tokenInput").value = data.token;
+                const token = data.token;
+                if (token) {
+                    document.getElementById("tokenBox").innerHTML = `<div class="result-success">🔐 التوكن الحالي: ${token.substring(0, 20)}...</div>`;
+                    document.getElementById("tokenInput").value = token;
                 } else {
                     document.getElementById("tokenBox").innerHTML = `<div class="result-pending">⚠️ لا يوجد توكن محفوظ</div>`;
                 }
@@ -1545,7 +1517,7 @@
                 document.getElementById("healthBox").innerHTML = 
                     `<div class="result-success">
                         ✅ الخادم يعمل بشكل جيد<br>
-                        🕒 الوقت: ${new Date(data.time).toLocaleTimeString('ar-SA')}<br>
+                        🕒 الوقت: ${new Date(data.timestamp).toLocaleTimeString('ar-SA')}<br>
                         ⚙️ النظام الآلي: ${data.auto_enabled ? "مفعل" : "متوقف"}<br>
                         📊 الجدولة: ${schedulerStatus}<br>
                         🔐 التوكن: ${tokenStatus}
@@ -1585,12 +1557,12 @@
             fetch("/employee-info")
             .then(r => r.json())
             .then(data => {
-                if (data.ok && data.data) {
+                if (data.ok && data.has_data) {
                     document.getElementById("tokenBox").innerHTML = 
                         `<div class="result-success">
                             ✅ بيانات الموظف موجودة<br>
-                            🆔 الرقم: ${data.data.employeeID || data.data.employeeId || 'غير معروف'}<br>
-                            📍 الموقع: ${data.data.locationId || 'غير معروف'}
+                            🆔 الرقم: ${data.employeeID}<br>
+                            📍 الموقع: ${data.locationId}
                         </div>`;
                 } else {
                     document.getElementById("tokenBox").innerHTML = 
@@ -1670,7 +1642,7 @@
                     const el = document.getElementById("autoModeStatus");
                     if (!el) return;
 
-                    if (data.settings?.auto_enabled) {
+                    if (data.auto_mode) {
                         el.textContent = "مفعل";
                         el.style.color = "#00ff00";
                     } else {
@@ -1738,24 +1710,25 @@
             const isSmallScreen = window.innerWidth <= 400;
             
             if (tokenDisplay && lengthDisplay) {
-                let formattedToken;
                 if (isSmallScreen) {
                     const firstPart = REAL_TOKEN.substring(0, 15);
                     const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 15);
-                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    const formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.innerHTML = formattedToken;
                     tokenDisplay.style.fontSize = "13px";
                 } else if (isMobile) {
                     const firstPart = REAL_TOKEN.substring(0, 25);
                     const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 25);
-                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    const formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.innerHTML = formattedToken;
                     tokenDisplay.style.fontSize = "14px";
                 } else {
                     const firstPart = REAL_TOKEN.substring(0, 32);
                     const lastPart = REAL_TOKEN.substring(REAL_TOKEN.length - 32);
-                    formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    const formattedToken = `${firstPart}<br>...<br>${lastPart}`;
+                    tokenDisplay.innerHTML = formattedToken;
                     tokenDisplay.style.fontSize = "15px";
                 }
-                tokenDisplay.innerHTML = formattedToken;
                 
                 lengthDisplay.textContent = `الطول: ${TOKEN_LENGTH} حرف`;
                 lengthDisplay.style.color = TOKEN_LENGTH > 50 ? "#00ff00" : "#ffaa00";
