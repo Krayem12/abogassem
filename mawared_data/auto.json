@@ -1,8 +1,8 @@
 {
   "enabled": false,
   "checkin": {
-    "start": "09:30",
-    "end": "10:00"
+    "start": "08:30",
+    "end": "9:00"
   },
   "checkout": {
     "start": "16:00",
@@ -10,5 +10,6 @@
   }
 
 }
+
 
 
