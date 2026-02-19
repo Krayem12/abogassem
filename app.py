@@ -64,8 +64,8 @@ auto_state = {
 auto_state_lock = threading.Lock()
 
 # حدود أوقات الدوام للحضور الآلي فقط (الأحد - الخميس)
-AUTO_CHECKIN_START = "09:30"
-AUTO_CHECKIN_END = "10:00"
+AUTO_CHECKIN_START = "08:30"
+AUTO_CHECKIN_END = "9:00"
 AUTO_CHECKOUT_START = "16:00"
 AUTO_CHECKOUT_END = "16:30"
 
@@ -1306,5 +1306,6 @@ if __name__ == "__main__":
         log(f"❌ AUTO-INIT ERROR: {e}")
 
     app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
+
 
 
